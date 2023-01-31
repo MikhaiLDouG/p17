@@ -22,9 +22,7 @@ namespace P16
     {
         MSAccessEntities ms;
 
-        Customer selectCustomer;
-
-        public Window2(SqlConnection MSConnection, SqlConnection DBConnection)
+        public Window2()
         {
             InitializeComponent();
             PreparingMS();
@@ -39,14 +37,7 @@ namespace P16
 
         private void GVCurrentCellChanged(object sender, EventArgs e)
         {
-            //if (row == null) return;
-            //row.EndEdit();
-        }
-
-        private void GVCellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            //ms.Customer = grid;
-            //ms.Customer
+            ms.SaveChanges();
         }
         
         /// <summary>
@@ -86,8 +77,14 @@ namespace P16
         /// <param name="e"></param>
         private void DeleteClick(object sender, RoutedEventArgs e)
         {
-            //row = (DataRowView)grid.SelectedItem;
-            //row.Row.Delete();
+            var c = (Customer)grid.SelectedItem;
+            ms.Customer.Remove(c);
+            ms.SaveChanges();
+        }
+
+        private void GVCellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+
         }
     }
 }

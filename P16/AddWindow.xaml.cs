@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Data.SqlClient;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 
 namespace P16
 {
@@ -37,7 +38,6 @@ namespace P16
 
                 var customer = new Customer()
                 {
-                    ID = 13,
                     Surname = SurnameText.Text,
                     Name = NameText.Text,
                     Name2 = Name2Text.Text,

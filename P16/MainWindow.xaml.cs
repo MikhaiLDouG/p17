@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data;
+using System.Data.Entity;
 
 namespace P16
 {
@@ -21,17 +23,15 @@ namespace P16
     /// </summary>
     public partial class MainWindow : Window
     {
-        SqlConnection connectionMS;
-        SqlConnection connectionDB;
-        SqlConnection connectionDataBase;
 
         private string login;
         private string password;
-
+        DataBaseEntities data;
         public MainWindow()
         {
             InitializeComponent();
-            OpenDataBase();
+            data = new DataBaseEntities();
+            data.Verification.Load();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -39,76 +39,30 @@ namespace P16
             login = LoginText.Text;
             password = PasswordText.Text;
             ErrorText.Content = string.Empty;
-            //if (Verification())
-            //{
-                connectionDataBase.Close();
-                OpenMS();
-                OpenDB();
-                Window2 window2 = new Window2(connectionMS, connectionDB);
+            if (Verification())
+            {
+                Window2 window2 = new Window2();
                 window2.Show();
                 Close();
-            //}
-            //else
-            //{
-            //    ErrorText.Content = "Неверный логин или пароль";
-            //}
+            }
+            else
+            {
+                //ErrorText.Content = "Неверный логин или пароль";
+            }
         }
 
-        private void OpenMS()
-        {
-            SqlConnectionStringBuilder sqlString = new SqlConnectionStringBuilder()
-            {
-                DataSource = @"(localdb)\MSSQLLocalDB",
-                InitialCatalog = @"MSAccess",
-                IntegratedSecurity = true,
-                Pooling = true
-            };
-            connectionMS = new SqlConnection(sqlString.ConnectionString);
-            connectionMS.StateChange +=
-            (s, e) => { MSState.Content = $"{(s as SqlConnection).State}"; };
-            connectionMS.Open();
-        }
-
-        private void OpenDB()
-        {
-            SqlConnectionStringBuilder sqlString = new SqlConnectionStringBuilder()
-            {
-                DataSource = @"(localdb)\MSSQLLocalDB",
-                InitialCatalog = @"MSSQLLocalDB16",
-                IntegratedSecurity = true,
-                Pooling = true
-            };
-            connectionDB = new SqlConnection(sqlString.ConnectionString);
-            connectionDB.StateChange +=
-            (s, e) => { DBState.Content = $"{(s as SqlConnection).State}"; };
-            connectionDB.Open();
-        }
-
-        private void OpenDataBase()
-        {
-            SqlConnectionStringBuilder sqlString = new SqlConnectionStringBuilder()
-            {
-                DataSource = @"(localdb)\MSSQLLocalDB",
-                InitialCatalog = @"DataBase",
-                IntegratedSecurity = true,
-                Pooling = true
-            };
-            connectionDataBase = new SqlConnection(sqlString.ConnectionString);
-            connectionDataBase.Open();
-            
-        }
         /// <summary>
         /// Проверка логина и пороля из таблицы Verification
         /// </summary>
         /// <returns></returns>
         private bool Verification()
         {
-            var sql = $@"Select* from Verification Where Email = '{login}' and Password = '{password}'";
-            SqlCommand command = new SqlCommand(sql, connectionDataBase);
-            SqlDataReader r = command.ExecuteReader();
-            bool a = r.HasRows;
-            r.Close();
-            return a;
+            data.Verification.Where(w => w.Email == password && w.Password == password);
+            if (data.Verification.Where(w => w.Email == login && w.Password == password).Count() > 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

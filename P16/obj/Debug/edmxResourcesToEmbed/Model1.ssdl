@@ -5,6 +5,10 @@
   <EntityType Name="Customer">
     <Key>
       <PropertyRef Name="ID" />
+      <PropertyRef Name="Surname" />
+      <PropertyRef Name="Name" />
+      <PropertyRef Name="Name2" />
+      <PropertyRef Name="Email" />
     </Key>
     <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Surname" Type="nchar" MaxLength="10" Nullable="false" />
